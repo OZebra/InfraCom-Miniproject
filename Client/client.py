@@ -48,7 +48,8 @@ try:
             print("File received!")
 
     else:
-        print("2")
+        system('clear')
+        fileName = input("Enter the file you want to upload: ")
     clientSocket.close()
 
 
