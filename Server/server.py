@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import os
 import sys
 import itertools
 import socket
@@ -28,21 +28,47 @@ def main():
         print("\n\n")
         print("Up and running!")
         print("\n\n")
+
         contador = 0
 
         while True:
-            contador += 1
+
             with server_socket.accept()[0] as connection_socket:
-                request = connection_socket.recv(1024).decode('ascii')
+                operation = connection_socket.recv(1024).decode('ascii')
+                print("Selected Operation: " + operation)
 
-                size = send_size(request)
-                connection_socket.send(size.encode())
+                if operation == "Send":
 
-                arq = send_file(request)
-                print("Sending file...")
-                connection_socket.send(arq.encode())
-                print("File sent!")
-            print("\n\nNumber of sent files: " + str(contador) + "\n\n")
+                    request = connection_socket.recv(1024).decode('ascii')
+
+                    size = send_size(request)
+                    connection_socket.send(size.encode())
+
+                    arq = send_file(request)
+                    print("Sending file...")
+                    connection_socket.send(arq.encode())
+                    print("File sent!")
+                else:
+                    ##Recebe o nome do arquivo a ser salvo
+                    storeFileName = connection_socket.recv(1024).decode('ascii')
+                    print("To-Save file name: " + storeFileName + "\n")
+                    ##Recebe o tamanho do arquivo a ser salvo
+                    storeFileSize = int(connection_socket.recv(1024).decode())
+                    print("To-save file size: " + str(storeFileSize))
+                    ##Cria o arquivo que está sendo upado
+                    with open('Database/' + storeFileName, "xb") as sf:
+                        data = b''
+                        while True:
+                            print("Receiving file...")
+                            aux = connection_socket.recv(1024)
+                            if not aux: break
+                            data += aux
+                            if len(data) >= storeFileSize: break
+
+                        sf.write(data)
+                        print("File received!\n\n\n")
+            contador += 1
+            print("\n\nNumber of requests: " + str(contador) + "\n\n")
 
     return 0
 
