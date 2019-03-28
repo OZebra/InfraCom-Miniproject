@@ -1,6 +1,9 @@
+##Arquivo para envio
+
 import socket
 import os
 import argparse
+from pathlib import Path
 
 path = os.path.join(os.path.expanduser('~'), 'Desktop', 'miniprojetoinfracom')
 
@@ -25,7 +28,6 @@ try:
         print("1 - Download from Database")
         print("2 - Upload to Database")
         print("3 - Quit")
-        print(path)
         cmd = input("Select option: ")
 
         if cmd == "1":
@@ -33,10 +35,19 @@ try:
 
             os.system('clear')
             fileName = input("Enter required file name: ")
+            frpath = Path(path + '/Server/Database/' + fileName)
+            while not frpath.is_file():
+                fileName = input("\nFile not found on server, try another one: ")
+                frpath = Path(path + '/Server/Database/' + fileName)
+
             saveName = input("Enter downloaded file name: ")
+            fspath = Path(path + '/Client/' +
+Ronaldinho é um cara bem legal!saveName)
+            while fspath.is_file():
+                saveName = input("\n\nFile already exists, try another name: ")
+                fspath = Path(path + '/Client/' + saveName)
 
             clientSocket.send(fileName.encode())
-
             fileSize = int(clientSocket.recv(1024).decode())
             print("File size = " + str(fileSize))
 
@@ -57,6 +68,16 @@ try:
             os.system('clear')
             ##Envia o nome do arquivo a ser salvo
             fileName = input("Enter the file you want to upload: ")
+            fupath = Path(path + '/Client/' + fileName)
+            fcpath = Path(path + '/Server/Database/' + fileName)
+
+            while not fupath.is_file():
+                fileName = input("\n\nFile do not exists, try another one: ")
+                fupath = Path(path + '/Client/' + fileName)
+
+            while fcpath.is_file():
+                fileName = input("\nFile already on server, try another one: ")
+                fcpath = Path(path + '/Server/Database/' + fileName)
 
             clientSocket.send(fileName.encode())
             ##Envia o tamanho do arquivo a ser salvo

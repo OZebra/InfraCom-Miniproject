@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+##Arquivo para envio
+
 import os
 import sys
 import itertools
